@@ -1,10 +1,10 @@
 package com.userfront.userfront.service.UserServiceImpl;
 
-import com.userfront.userfront.Dao.RoleDao;
-import com.userfront.userfront.Dao.UserDao;
+import com.userfront.userfront.dao.RoleDao;
+import com.userfront.userfront.dao.UserDao;
 import com.userfront.userfront.domain.User;
 import com.userfront.userfront.domain.security.UserRole;
-import com.userfront.userfront.service.AccountServce;
+import com.userfront.userfront.service.AccountService;
 import com.userfront.userfront.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 
 @Slf4j
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private AccountServce accountService;
+    private AccountService accountService;
 
     public void save(User user){
         userDao.save(user);
@@ -81,12 +82,36 @@ public class UserServiceImpl implements UserService {
                 roleDao.save(ur.getRole());
             }
 
-            user.getUserRoles(accountService.createPrimaryAccount());
-            user.getUserRoles(accountService.createSavingsAccount());
+            user.getUserRoles().addAll(userRoles);
+
+            user.setPrimaryAccount(accountService.createPrimaryAccount());
+            user.setSavingsAccount(accountService.createSavingsAccount());
 
             localUser = userDao.save(user);
         }
         return localUser;
+    }
+
+    public User saveUser (User user) {
+        return userDao.save(user);
+    }
+
+    public List<User> findUserList() {
+        return userDao.findAll();
+    }
+
+    public void enableUser (String username) {
+        User user = findByUsername(username);
+        user.setEnabled(true);
+        userDao.save(user);
+    }
+
+    public void disableUser (String username) {
+        User user = findByUsername(username);
+        user.setEnabled(false);
+        System.out.println(user.isEnabled());
+        userDao.save(user);
+        System.out.println(username + " is disabled.");
     }
 
 

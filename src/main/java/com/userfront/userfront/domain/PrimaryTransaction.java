@@ -31,6 +31,7 @@ public class PrimaryTransaction {
         this.status = status;
         this.amount = amount;
         this.availableBalance = availableBalance;
+        this.primaryAccount=primaryAccount;
     }
 
     public Long getId() {

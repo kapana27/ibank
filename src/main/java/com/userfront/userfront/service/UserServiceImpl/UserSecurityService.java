@@ -1,6 +1,6 @@
 package com.userfront.userfront.service.UserServiceImpl;
 
-import com.userfront.userfront.Dao.UserDao;
+import com.userfront.userfront.dao.UserDao;
 import com.userfront.userfront.domain.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

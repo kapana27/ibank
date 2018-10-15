@@ -20,4 +20,7 @@ public interface UserService {
      boolean checkUsernameExists(String username);
 
      User createUser(User user, Set<UserRole> userRoles);
+
+
+    User saveUser(User user);
 }

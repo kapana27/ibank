@@ -1,7 +1,12 @@
 package com.userfront.userfront.controller;
 
+import com.userfront.userfront.dao.RoleDao;
+import com.userfront.userfront.domain.PrimaryAccount;
+import com.userfront.userfront.domain.SavingsAccount;
 import com.userfront.userfront.domain.User;
+import com.userfront.userfront.domain.security.UserRole;
 import com.userfront.userfront.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,14 +14,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Controller
 public class HomeController {
 
     @Autowired
     UserService userService ;
+
+    @Autowired
+    private RoleDao roleDao;
 
     @RequestMapping("/")
     public String home(){
@@ -51,17 +61,27 @@ public class HomeController {
             return "signup";
         }else{
 
-/*
-            Set<UserRole> userRoles = new HashSet<>();
-            userRoles.add(new UserRole(user,roleDao.findByName("USER")));
-            userService.createUser(user,userRoles);
-*/
 
-            userService.createUser(user);
+            Set<UserRole> userRoles = new HashSet<>();
+            userRoles.add(new UserRole(user,roleDao.findByName("ROLE_USER")));
+            userService.createUser(user,userRoles);
             return "redirect:/";
         }
-
     }
+    @RequestMapping("/userFront")
+    public String userFront(Principal principal, Model model){
+        log.info("info {}",principal );
+        User user = userService.findByUsername(principal.getName());
+
+        PrimaryAccount primaryAccount = user.getPrimaryAccount();
+        SavingsAccount savingsAccount = user.getSavingsAccount();
+
+        model.addAttribute("primaryAccount", primaryAccount);
+        model.addAttribute("savingsAccount", savingsAccount);
+
+        return "userFront";
+    }
+
 
 
 }
